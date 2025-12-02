@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "../headers/sourparse.h"
+#include <SDL2/SDL.h>
 
 enum {
     LG_WIDGET_TYPE_PANEL = 0,
@@ -22,6 +23,13 @@ enum {
     LG_WIDGET_ALIGNMENT_DOWN = 5,
 };
 
+typedef struct {
+    SDL_Window* sdl_window;
+    SDL_Renderer* sdl_renderer;
+    SDL_Texture* sdl_window_texture;
+    uint32_t* frame_buffer;
+    uint16_t width, height;
+} LG_window_data;
 
 typedef struct {
     uint32_t* image_data;
@@ -46,8 +54,8 @@ typedef struct {
     uint32_t background_color;
     
     uint32_t border_color;
-    uint32_t border_size;
-    uint32_t border_radius;
+    uint16_t border_size;
+    uint16_t radius;
     
     int32_t width;
     int32_t height;
@@ -90,7 +98,7 @@ typedef struct {
     LG_text_data text_data;
 } LG_text_widget_data;
 
-typedef struct {
+typedef struct LG_widget {
     uint32_t type; // 0 panel, 1 text, 2 button, 3 input, 4 image
     uint32_t id;
     LG_image_widget_data image_widget_data;
@@ -98,9 +106,10 @@ typedef struct {
     LG_button_widget_data button_widget_data;
     LG_text_widget_data text_widget_data;
     LG_widget_style* widget_style;
-    LG_widget** children;
+    struct LG_widget** children;
     uint32_t child_count;
-    LG_widget* parent;
+    struct LG_widget* parent;
+    LG_window_data* window_data;
 } LG_widget;
 
 typedef struct {
@@ -108,6 +117,7 @@ typedef struct {
     LG_font_style* default_font_style;
     LG_widget* default_widget;
     uint32_t current_id;
+    uint16_t current_window_panel_count;
 } LG_context;
 
 // functions
@@ -116,7 +126,7 @@ LG_font_face* LG_new_font_face(char* filename);
 
 LG_font_style* LG_new_font_style();
 
-LG_widget* LG_new_window();
+LG_widget* LG_new_window(char* title, uint16_t width, uint16_t height);
 
 LG_widget* LG_add_panel_widget(LG_widget* parent_widget);
 
@@ -125,5 +135,11 @@ LG_widget* LG_add_text_widget(LG_widget* parent_widget);
 LG_widget* LG_add_button_widget(LG_widget* parent_widget);
 
 LG_image* LG_load_image(char* filename);
+
+int LG_render_window(LG_widget* window_widget);
+
+int LG_init();
+
+LG_context* LG_get_context();
 
 #endif // LEMON_GUICE_H

@@ -1,4 +1,4 @@
-#include "src/headers/lemonguice.h"
+#include "../headers/lemonguice.h"
 
 int main(){
     LG_init(); // init
@@ -11,10 +11,10 @@ int main(){
     font_style->font_size = 20;
 
 
-    LG_widget* root_panel = LG_new_window(); // create new SDL window, return the root panel 
+    LG_widget* root_panel = LG_new_window("LemonGUIce", 800, 800); // create new SDL window, return the root panel 
 
     // LG_add_child_panel(root_panel, new_panel); // maybe?
-
+/*
     LG_widget* left_panel = LG_new_child_panel(root_panel);
     LG_widget* right_panel = LG_new_child_panel(root_panel);
 
@@ -33,6 +33,13 @@ int main(){
     LG_widget* image = LG_add_image_widget(right_panel);
 
     image->image_widget_data.image = LG_load_image("images/test_image.bmp");
+*/
+
+    LG_context* context = LG_get_context();
+
+    while (context->current_window_panel_count){
+        LG_render_window(root_panel);
+    }
 
     return 0;
 }
